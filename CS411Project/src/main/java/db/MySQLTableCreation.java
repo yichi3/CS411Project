@@ -3,7 +3,7 @@ package db;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.Statement;
-
+//a line of comment to test if i can push. delete later.
 public class MySQLTableCreation {
     // Run this as Java application to reset the database.
     public static void main(String[] args) {
