@@ -7,6 +7,26 @@
         <element id="directory" name="classes">
           <element id="module-output" name="CS411Project" />
         </element>
+        <element id="directory" name="lib">
+          <element id="library" level="project" name="Maven: com.google.code.gson:gson:2.8.6" />
+          <element id="library" level="project" name="Maven: com.google.protobuf:protobuf-java:3.11.4" />
+          <element id="library" level="project" name="Maven: javax.servlet:javax.servlet-api:4.0.1" />
+          <element id="library" level="project" name="Maven: junit:junit:3.8.1" />
+          <element id="library" level="project" name="Maven: mysql:mysql-connector-java:8.0.22" />
+          <element id="library" level="project" name="Maven: org.apache.tomcat:tomcat-annotations-api:9.0.30" />
+          <element id="library" level="project" name="Maven: org.apache.tomcat:tomcat-api:9.0.30" />
+          <element id="library" level="project" name="Maven: org.apache.tomcat:tomcat-catalina:9.0.30" />
+          <element id="library" level="project" name="Maven: org.apache.tomcat:tomcat-coyote:9.0.30" />
+          <element id="library" level="project" name="Maven: org.apache.tomcat:tomcat-el-api:9.0.30" />
+          <element id="library" level="project" name="Maven: org.apache.tomcat:tomcat-jaspic-api:9.0.30" />
+          <element id="library" level="project" name="Maven: org.apache.tomcat:tomcat-jni:9.0.30" />
+          <element id="library" level="project" name="Maven: org.apache.tomcat:tomcat-jsp-api:9.0.30" />
+          <element id="library" level="project" name="Maven: org.apache.tomcat:tomcat-juli:9.0.30" />
+          <element id="library" level="project" name="Maven: org.apache.tomcat:tomcat-servlet-api:9.0.30" />
+          <element id="library" level="project" name="Maven: org.apache.tomcat:tomcat-util-scan:9.0.30" />
+          <element id="library" level="project" name="Maven: org.apache.tomcat:tomcat-util:9.0.30" />
+          <element id="library" level="project" name="Maven: org.json:json:20190722" />
+        </element>
       </element>
     </root>
   </artifact>
