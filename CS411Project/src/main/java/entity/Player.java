@@ -11,6 +11,7 @@ public class Player {
     private final String position;
     private final String birthDate;
     private final String nationality;
+    private final String imageUrl;
 
     private Player(PlayerBuilder builder) {
         this.teamName = builder.teamName;
@@ -21,6 +22,7 @@ public class Player {
         this.position = builder.position;
         this.birthDate = builder.birthDate;
         this.nationality = builder.nationality;
+        this.imageUrl = builder.imageUrl;
     }
 
     public String getTeamName() {
@@ -55,6 +57,10 @@ public class Player {
         return nationality;
     }
 
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
     public JSONObject toJSONObject() {
         JSONObject obj = new JSONObject();
         obj.put("team_name", teamName);
@@ -65,7 +71,23 @@ public class Player {
         obj.put("position", position);
         obj.put("birth_date", birthDate);
         obj.put("nationality", nationality);
+        obj.put("image_url", imageUrl);
         return obj;
+    }
+
+    @Override
+    public String toString() {
+        return "Player{" +
+                "teamName='" + teamName + '\'' +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", commonName='" + commonName + '\'' +
+                ", gender='" + gender + '\'' +
+                ", position='" + position + '\'' +
+                ", birthDate='" + birthDate + '\'' +
+                ", nationality='" + nationality + '\'' +
+                ", imageUrl='" + imageUrl + '\'' +
+                '}';
     }
 
     public static class PlayerBuilder {
@@ -77,39 +99,52 @@ public class Player {
         private String position;
         private String birthDate;
         private String nationality;
+        private String imageUrl;
 
-        public void setTeamName(String teamName) {
+        public PlayerBuilder setTeamName(String teamName) {
             this.teamName = teamName;
+            return this;
         }
 
-        public void setFirstName(String firstName) {
+        public PlayerBuilder setFirstName(String firstName) {
             this.firstName = firstName;
+            return this;
         }
 
-        public void setLastName(String lastName) {
+        public PlayerBuilder setLastName(String lastName) {
             this.lastName = lastName;
+            return this;
         }
 
-        public void setCommonName(String commonName) {
+        public PlayerBuilder setCommonName(String commonName) {
             this.commonName = commonName;
+            return this;
         }
 
-        public void setGender(String gender) {
+        public PlayerBuilder setGender(String gender) {
             this.gender = gender;
+            return this;
         }
 
-        public void setPosition(String position) {
+        public PlayerBuilder setPosition(String position) {
             this.position = position;
+            return this;
         }
 
-        public void setBirthDate(String birthDate) {
+        public PlayerBuilder setBirthDate(String birthDate) {
             this.birthDate = birthDate;
+            return this;
         }
 
-        public void setNationality(String nationality) {
+        public PlayerBuilder setNationality(String nationality) {
             this.nationality = nationality;
+            return this;
         }
 
+        public PlayerBuilder setImageUrl(String imageUrl) {
+            this.imageUrl = imageUrl;
+            return this;
+        }
 
         public Player build() {
             return new Player(this);
