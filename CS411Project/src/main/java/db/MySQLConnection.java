@@ -10,7 +10,9 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 
@@ -85,8 +87,8 @@ public class MySQLConnection {
         }
 
         sql = "INSERT INTO Player (playerID, teamID, fullName, commonName,"
-                    + "position, birthDate, nationality, imageUrl) VALUES"
-                    + "(?, ?, ?, ?, ?, ?, ?, ?)";
+                + "position, birthDate, nationality, imageUrl) VALUES"
+                + "(?, ?, ?, ?, ?, ?, ?, ?)";
         try {
             PreparedStatement statement = con.prepareStatement(sql);
             statement.setString(1, Integer.toString(player.getPlayerID()));
@@ -186,7 +188,7 @@ public class MySQLConnection {
             System.err.println("DB connection failed");
             return false;
         }
-        String sql = "insert ignore into User values(?, ?, ?, ?, ?)";
+        String sql = "insert ignore into UserTable values(?, ?, ?, ?, ?)";
         try {
             PreparedStatement st = con.prepareStatement(sql);
             st.setString(1, user.getUserName());
@@ -266,7 +268,7 @@ public class MySQLConnection {
         Set<User> result = new HashSet<>();
         try {
             PreparedStatement st = con.prepareStatement(
-                    "SELECT * FROM User WHERE userName = ? ");
+                    "SELECT * FROM UserTable WHERE userName = ? ");
             st.setString(1, userName);
             ResultSet rs = st.executeQuery();
             if (rs.next()) {
@@ -283,6 +285,47 @@ public class MySQLConnection {
                 result.add(builder.build());
             }
         } catch(SQLException e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    public Map<String, Integer> playerCountByPosition(String teamName) {
+        Map<String, Integer> result = new HashMap<>();
+        if (con == null) {
+            System.err.println("DB connection failed");
+            return result;
+        }
+        String sql = "SELECT position, COUNT(playerID) AS count FROM Player NATURAL JOIN Team WHERE name = ? GROUP BY position";
+        try {
+            PreparedStatement statement = con.prepareStatement(sql);
+            statement.setString(1, teamName);
+            ResultSet rs = statement.executeQuery();
+            while (rs.next()) {
+                result.put(rs.getString("position"), rs.getInt("count"));
+            }
+            statement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    public Map<String, Integer> playerCountByNationality() {
+        Map<String, Integer> result = new HashMap<>();
+        if (con == null) {
+            System.err.println("DB connection failed");
+            return result;
+        }
+        String sql = "SELECT position, nationality, COUNT(playerID) AS count FROM Player NATURAL JOIN Team GROUP BY position, nationality";
+        try {
+            PreparedStatement statement = con.prepareStatement(sql);
+            ResultSet rs = statement.executeQuery();
+            while (rs.next()) {
+                result.put(rs.getString("position") + ", " + rs.getString("nationality"), rs.getInt("count"));
+            }
+            statement.close();
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         return result;
