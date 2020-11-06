@@ -51,7 +51,7 @@ public class MySQLConnection {
 
         try {
 
-            PreparedStatement st = con.prepareStatement("SELECT * FROM Player WHERE commonName = '?' ");
+            PreparedStatement st = con.prepareStatement("SELECT * FROM Player WHERE commonName = ? ");
 
             st.setString(1, commonName);
 
@@ -141,7 +141,7 @@ public class MySQLConnection {
             return;
         }
         try {
-            PreparedStatement st1 = con.prepareStatement("SELECT * FROM UserTable WHERE userName = '?' ");
+            PreparedStatement st1 = con.prepareStatement("SELECT * FROM UserTable WHERE userName = ? ");
             st1.setString(1, userName);
 
             ResultSet rs = st1.executeQuery();
@@ -167,7 +167,7 @@ public class MySQLConnection {
             }
 
 
-            PreparedStatement st = con.prepareStatement("UPDATE UserTable SET  firstName = '?', lastName = '?', email = '?', phone = '?' WHERE userName = '?' ");
+            PreparedStatement st = con.prepareStatement("UPDATE UserTable SET  firstName = ?, lastName = ?, email = ?, phone = ? WHERE userName = ? ");
 
             st.setString(1, firstName);
 
@@ -200,7 +200,7 @@ public class MySQLConnection {
         }
 
         try {
-            PreparedStatement st = con.prepareStatement("DELETE * FROM UserTable WHERE userName = '?' ");
+            PreparedStatement st = con.prepareStatement("DELETE * FROM UserTable WHERE userName = ? ");
 
             st.setString(1, userName);
 
