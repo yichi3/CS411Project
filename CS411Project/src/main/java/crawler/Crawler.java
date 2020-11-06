@@ -15,17 +15,23 @@ public class Crawler {
     private static final String url = "https://lol.gamepedia.com";
     public static void main(String[] args) throws IOException {
         String tournamentUrl = url + "/2020_Season_World_Championship";
-        TotalCrawler(tournamentUrl);
-//        TestMethod("https://lol.gamepedia.com/MagiFelix");
+        TeamPlayerCrawler(tournamentUrl);
     }
 
-    private static void TotalCrawler(String tournamentUrl) throws IOException {
+    private static void TeamPlayerCrawler(String tournamentUrl) throws IOException {
+        MySQLConnection con = new MySQLConnection();
+        int playerCount = con.getPlayerCount();
+        int teamCount = con.getTeamCount();
+        con.close();
+        Player.setPlayerIDCounter(playerCount);
+        Team.setTeamIDCounter(teamCount);
+//        LoadTeam("Invictus Gaming", "/Invictus_Gaming");
         Document doc = Jsoup.connect(tournamentUrl).get();
         Elements teams = doc.select(".tournament-results-team > .team > .teamname");
         for (Element team : teams) {
             String teamName = team.text();
             Team newTeam = new Team(teamName);
-            MySQLConnection con = new MySQLConnection();
+            con = new MySQLConnection();
             con.setTeamInfo(newTeam);
             con.close();
             System.out.println("Current team is: " + newTeam.getName());
@@ -77,11 +83,11 @@ public class Crawler {
         System.out.println(newPlayer.getCommonName());
     }
 
-    private static void TestMethod(String url) throws IOException {
-        Document doc = Jsoup.connect(url).get();
-        Element player = doc.select("#infoboxPlayer").first();
-        System.out.println(player.html());
-        String commonName = player.select("tr > .infobox-title").text();
-        System.out.println(commonName);
+    private static void LoadTeam(String teamName, String teamUrl) throws IOException{
+        Team newTeam = new Team(teamName);
+        MySQLConnection con = new MySQLConnection();
+        con.setTeamInfo(newTeam);
+        con.close();
+        TeamCrawler(url + teamUrl, newTeam);
     }
 }
