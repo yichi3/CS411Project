@@ -24,12 +24,9 @@ public class PlayerServlet extends HttpServlet {
         String teamName = request.getParameter("teamName");
         MySQLConnection con = new MySQLConnection();
         Map<String, Integer> count1 = con.playerCountByPosition(teamName);
-
         // now display the count result to the screen
         JSONArray array1 = new JSONArray();
         writeData(count1, array1);
-        System.out.print(count1.size());
-
         Map<String, Integer> count2 = con.playerCountByNationality();
         // now display the count result to the screen
         JSONArray array2 = new JSONArray();

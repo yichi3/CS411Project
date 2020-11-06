@@ -85,7 +85,6 @@ public class MySQLConnection {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
         sql = "INSERT INTO Player (playerID, teamID, fullName, commonName,"
                 + "position, birthDate, nationality, imageUrl) VALUES"
                 + "(?, ?, ?, ?, ?, ?, ?, ?)";
@@ -317,9 +316,10 @@ public class MySQLConnection {
             System.err.println("DB connection failed");
             return result;
         }
-        String sql = "SELECT position, nationality, COUNT(playerID) AS count FROM Player NATURAL JOIN Team GROUP BY position, nationality";
+        String sql = "SELECT position, nationality, COUNT(playerID) AS count FROM Player NATURAL JOIN Team WHERE birthDate LIKE ? GROUP BY position, nationality";
         try {
             PreparedStatement statement = con.prepareStatement(sql);
+            statement.setString(1, "%200%");
             ResultSet rs = statement.executeQuery();
             while (rs.next()) {
                 result.put(rs.getString("position") + ", " + rs.getString("nationality"), rs.getInt("count"));
