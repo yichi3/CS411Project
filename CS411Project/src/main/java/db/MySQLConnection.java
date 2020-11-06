@@ -94,89 +94,86 @@ public class MySQLConnection {
         return result;
     }
 
-//    public void insertGame(String redTeamName,
-//                           String blueTeamName,
-//                           int redTeamKill,
-//                           int blueTeamKill) {
-//
-//        if (con == null) {
-//            System.err.println("DB connection failed");
-//            return;
-//        }
-//        try {
-//
-//            PreparedStatement st = con.prepareStatement("insert into Game values(?, ?, ?, ?)");
-//
-//            st.setString(1, redTeamName);
-//            st.setString(2, blueTeamName);
-//            st.setInt(3, redTeamKill);
-//            st.setInt(4, blueTeamKill);
-//
-//            st.executeUpdate();
-//            st.close();
-//            con.close();
-//
-//
-//        } catch(SQLException e) {
-//            e.printStackTrace();
-//        }
-//
-//    }
-//
-//    public void updateGame(String redTeamName,
-//                           String blueTeamName,
-//                           int redTeamKill,
-//                           int blueTeamKill) {
-//
-//        if (con == null) {
-//            System.err.println("DB connection failed");
-//            return;
-//        }
-//        try {
-//            PreparedStatement st = con.prepareStatement("UPDATE Game SET  WHERE");
-//
-//            st.setString(1, redTeamName);
-//            st.setString(2, blueTeamName);
-//            st.setInt(3, redTeamKill);
-//            st.setInt(4, blueTeamKill);
-//            st.executeUpdate();
-//            st.close();
-//            con.close();
-//
-//
-//        } catch(SQLException e) {
-//            e.printStackTrace();
-//        }
-//
-//    }
-//
-//    public void deleteGame(String redTeamName,
-//                           String blueTeamName,
-//                           int redTeamKill,
-//                           int blueTeamKill) {
-//
-//        if (con == null) {
-//            System.err.println("DB connection failed");
-//            return;
-//        }
-//
-//        try {
-//            PreparedStatement st = con.prepareStatement("DELETE FROM Game WHERE ");
-//
-//            st.setString(1, redTeamName);
-//            st.setString(2, blueTeamName);
-//            st.setInt(3, redTeamKill);
-//            st.setInt(4, blueTeamKill);
-//
-//            st.executeUpdate();
-//            st.close();
-//            con.close();
-//
-//
-//        } catch(SQLException e) {
-//            e.printStackTrace();
-//        }
-//
-//    }
-//
+    public void insertUser(String userName,
+                           String firstName,
+                           String lastName,
+                           String phoneNumber,
+                           String email) {
+
+
+        if (con == null) {
+            System.err.println("DB connection failed");
+            return;
+        }
+        try {
+
+            PreparedStatement st = con.prepareStatement("insert into User values(?, ?, ?, ?, ?)");
+
+            st.setString(1, userName);
+            st.setString(2, firstName);
+            st.setString(3, lastName);
+            st.setString(4, phoneNumber);
+            st.setString(5, email);
+
+
+            st.executeUpdate();
+            st.close();
+            con.close();
+
+
+        } catch(SQLException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+
+    public void updateUser(String userName) {
+
+        if (con == null) {
+            System.err.println("DB connection failed");
+            return;
+        }
+        try {
+            PreparedStatement st = con.prepareStatement("UPDATE User SET  WHERE");
+
+            st.setString(1, redTeamName);
+            st.setString(2, blueTeamName);
+            st.setInt(3, redTeamKill);
+            st.setInt(4, blueTeamKill);
+            st.executeUpdate();
+            st.close();
+            con.close();
+
+
+        } catch(SQLException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+
+    public void deleteUser(String userName) {
+
+        if (con == null) {
+            System.err.println("DB connection failed");
+            return;
+        }
+
+        try {
+            PreparedStatement st = con.prepareStatement("DELETE * FROM User WHERE userName = '?' ");
+
+            st.setString(1, userName);
+
+            st.executeUpdate();
+            st.close();
+            con.close();
+
+
+        } catch(SQLException e) {
+            e.printStackTrace();
+        }
+
+    }
+
 }
