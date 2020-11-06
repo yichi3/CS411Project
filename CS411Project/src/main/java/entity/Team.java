@@ -1,7 +1,7 @@
 package entity;
 
 public class Team {
-    private static int teamIDCounter = 3;
+    private static int teamIDCounter = 0;
     private final int teamID;
     private final String name;
 

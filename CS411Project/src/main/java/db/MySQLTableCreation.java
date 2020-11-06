@@ -11,36 +11,47 @@ public class MySQLTableCreation {
             // Step 1 Connect to MySQL.
             System.out.println("Connecting to " + MySQLDBUtil.URL);
             Class.forName("com.mysql.cj.jdbc.Driver").getConstructor().newInstance();
-            Connection conn = DriverManager.getConnection(MySQLDBUtil.URL);
+            Connection con = DriverManager.getConnection(MySQLDBUtil.URL);
 
-            if (conn == null) {
+            if (con == null) {
                 return;
             }
 
-            Statement statement = conn.createStatement();
+            Statement statement = con.createStatement();
             String sql = "";
 
             // Drop tables in case they exist.
-            sql = "DROP TABLE IF EXISTS Team";
+            sql = "DROP TABLE IF EXISTS MatchPP";
+            statement.executeUpdate(sql);
+            sql = "DROP TABLE IF EXISTS MatchTP";
+            statement.executeUpdate(sql);
+            sql = "DROP TABLE IF EXISTS PlayerPerformance";
+            statement.executeUpdate(sql);
+            sql = "DROP TABLE IF EXISTS TeamPerformence";
+            statement.executeUpdate(sql);
+            sql = "DROP TABLE IF EXISTS TeamPlayer";
             statement.executeUpdate(sql);
             sql = "DROP TABLE IF EXISTS Player";
             statement.executeUpdate(sql);
             sql = "DROP TABLE IF EXISTS Champion";
             statement.executeUpdate(sql);
-            sql = "DROP TABLE IF EXISTS TeamPlayer";
-            statement.executeUpdate(sql);
             sql = "DROP TABLE IF EXISTS SingleMatch";
             statement.executeUpdate(sql);
-            sql = "DROP TABLE IF EXISTS PlayerPerformence";
+            sql = "DROP TABLE IF EXISTS Team";
             statement.executeUpdate(sql);
-            sql = "DROP TABLE IF EXISTS TeamPerformence";
-            statement.executeUpdate(sql);
-            sql = "DROP TABLE IF EXISTS MatchPP";
-            statement.executeUpdate(sql);
-            sql = "DROP TABLE IF EXISTS MatchTP";
+            sql = "DROP TABLE IF EXISTS UserTable";
             statement.executeUpdate(sql);
 
             // Create new tables
+            sql = "CREATE TABLE UserTable ("
+                    + "userName     VARCHAR(100) PRIMARY KEY,"
+                    + "firstName    VARCHAR(100),"
+                    + "lastName     VARCHAR(100),"
+                    + "email        VARCHAR(100),"
+                    + "phone        VARCHAR(100)"
+                    + ")";
+            statement.executeUpdate(sql);
+
             sql = "CREATE TABLE Team ("
                     + "teamID   INT PRIMARY KEY,"
                     + "name     VARCHAR(100)"
@@ -50,13 +61,12 @@ public class MySQLTableCreation {
             sql = "CREATE TABLE Player ("
                     + "playerID     INT PRIMARY KEY,"
                     + "teamID       INT,"
-                    + "firstName    VARCHAR(100),"
-                    + "lastName     VARCHAR(100),"
+                    + "fullName    VARCHAR(100),"
                     + "commonName   VARCHAR(100),"
-                    + "gender       VARCHAR(100),"
                     + "position     VARCHAR(100),"
                     + "birthDate    VARCHAR(100),"
-                    + "nationality  VARCHAR(100)"
+                    + "nationality  VARCHAR(100),"
+                    + "imageUrl     VARCHAR(500)"
                     + ")";
             statement.executeUpdate(sql);
 
@@ -102,7 +112,7 @@ public class MySQLTableCreation {
                     + "inhibitorKills       INT,"
                     + "goldEarned           INT,"
                     + "totalMinionsKilled   INT,"
-                    + "neutralMinionsKIlled INT,"
+                    + "neutralMinionsKilled INT,"
                     + "PRIMARY KEY (playerPerformanceID, matchID),"
                     + "FOREIGN KEY (matchID) REFERENCES SingleMatch(matchID) ON DELETE CASCADE,"
                     + "FOREIGN KEY (teamID) REFERENCES Team(teamID) ON DELETE SET NULL,"
@@ -149,7 +159,7 @@ public class MySQLTableCreation {
                     + ")";
             statement.executeUpdate(sql);
 
-            conn.close();
+            con.close();
             System.out.println("Import done successfully");
 
         } catch (Exception e) {
