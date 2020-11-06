@@ -50,15 +50,29 @@ public class MySQLConnection {
 
         try {
 
+<<<<<<< HEAD
             PreparedStatement st = con.prepareStatement("SELECT * FROM Player WHERE commonName = '?' ");
 
             st.setString(1, commonName);
 
 
+=======
+            PreparedStatement st = con.prepareStatement(
+                    "SELECT * FROM Player NATURAL JOIN Team WHERE commonName = ? ");
+            st.setString(1, commonName);
+
+>>>>>>> b3859a780b57ca79add1f7fdf8f9a22e42a60bc7
             ResultSet rs = st.executeQuery();
             if (rs.next()) {
                 PlayerBuilder builder = new PlayerBuilder();
 
+<<<<<<< HEAD
+=======
+                String teamName = rs.getString("name");
+                builder.setTeamName(teamName);
+
+                builder.setCommonName(commonName);
+>>>>>>> b3859a780b57ca79add1f7fdf8f9a22e42a60bc7
 
                 String firstName = rs.getString("firstName");
                 builder.setFirstName(firstName);
@@ -82,7 +96,11 @@ public class MySQLConnection {
 
             }
 
+<<<<<<< HEAD
             st.executeUpdate();
+=======
+//            st.executeUpdate();
+>>>>>>> b3859a780b57ca79add1f7fdf8f9a22e42a60bc7
             st.close();
             con.close();
 
