@@ -3,46 +3,41 @@ package entity;
 import org.json.JSONObject;
 
 public class Player {
+    private static int playerIDCounter = 0;
+    private final int playerID;
     private final String teamName;
-    private final String firstName;
-    private final String lastName;
+    private final String fullName;
     private final String commonName;
-    private final String gender;
     private final String position;
     private final String birthDate;
     private final String nationality;
     private final String imageUrl;
 
     private Player(PlayerBuilder builder) {
+        this.playerID = playerIDCounter++;
         this.teamName = builder.teamName;
-        this.firstName = builder.firstName;
-        this.lastName = builder.lastName;
+        this.fullName = builder.fullName;
         this.commonName = builder.commonName;
-        this.gender = builder.gender;
         this.position = builder.position;
         this.birthDate = builder.birthDate;
         this.nationality = builder.nationality;
         this.imageUrl = builder.imageUrl;
     }
 
+    public int getPlayerID() {
+        return playerID;
+    }
+
     public String getTeamName() {
         return teamName;
     }
 
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
+    public String getFullName() {
+        return fullName;
     }
 
     public String getCommonName() {
         return commonName;
-    }
-
-    public String getGender() {
-        return gender;
     }
 
     public String getPosition() {
@@ -64,10 +59,8 @@ public class Player {
     public JSONObject toJSONObject() {
         JSONObject obj = new JSONObject();
         obj.put("team_name", teamName);
-        obj.put("first_name", firstName);
-        obj.put("last_name", lastName);
+        obj.put("full_name", fullName);
         obj.put("game_id", commonName);
-        obj.put("gender", gender);
         obj.put("position", position);
         obj.put("birth_date", birthDate);
         obj.put("nationality", nationality);
@@ -79,10 +72,8 @@ public class Player {
     public String toString() {
         return "Player{" +
                 "teamName='" + teamName + '\'' +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
+                ", firstName='" + fullName + '\'' +
                 ", commonName='" + commonName + '\'' +
-                ", gender='" + gender + '\'' +
                 ", position='" + position + '\'' +
                 ", birthDate='" + birthDate + '\'' +
                 ", nationality='" + nationality + '\'' +
@@ -92,10 +83,8 @@ public class Player {
 
     public static class PlayerBuilder {
         private String teamName;
-        private String firstName;
-        private String lastName;
+        private String fullName;
         private String commonName;
-        private String gender;
         private String position;
         private String birthDate;
         private String nationality;
@@ -106,23 +95,13 @@ public class Player {
             return this;
         }
 
-        public PlayerBuilder setFirstName(String firstName) {
-            this.firstName = firstName;
-            return this;
-        }
-
-        public PlayerBuilder setLastName(String lastName) {
-            this.lastName = lastName;
+        public PlayerBuilder setFullName(String fullName) {
+            this.fullName = fullName;
             return this;
         }
 
         public PlayerBuilder setCommonName(String commonName) {
             this.commonName = commonName;
-            return this;
-        }
-
-        public PlayerBuilder setGender(String gender) {
-            this.gender = gender;
             return this;
         }
 

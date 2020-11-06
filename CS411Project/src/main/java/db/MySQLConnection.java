@@ -1,6 +1,7 @@
 package db;
 import entity.Player;
 import entity.Player.*;
+import entity.Team;
 
 
 import java.sql.Connection;
@@ -35,7 +36,45 @@ public class MySQLConnection {
         }
     }
 
+    public void setTeamInfo(Team team) {
+        if (con == null) {
+            System.err.println("DB connection failed");
+            return;
+        }
+        String sql = "INSERT INTO Team (teamID, name) VALUES (?, ?)";
+        try {
+            PreparedStatement statement = con.prepareStatement(sql);
+            statement.setString(1, Integer.toString(team.getTeamID()));
+            statement.setString(2, team.getName());
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 
+    public void setPlayerInfo(Player player, int teamID) {
+        if (con == null) {
+            System.err.println("DB connection failed");
+            return;
+        }
+        String sql = "INSERT INTO Player (playerID, teamID, fullName, commonName,"
+                    + "position, birthDate, nationality, imageUrl) VALUES"
+                    + "(?, ?, ?, ?, ?, ?, ?, ?)";
+        try {
+            PreparedStatement statement = con.prepareStatement(sql);
+            statement.setString(1, Integer.toString(player.getPlayerID()));
+            statement.setString(2, Integer.toString(teamID));
+            statement.setString(3, player.getFullName());
+            statement.setString(4, player.getCommonName());
+            statement.setString(5, player.getPosition());
+            statement.setString(6, player.getBirthDate());
+            statement.setString(7, player.getNationality());
+            statement.setString(8, player.getImageUrl());
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 
 
     public Set<Player> getPlayerInfo(String commonName) {
@@ -63,14 +102,8 @@ public class MySQLConnection {
 
                 builder.setCommonName(commonName);
 
-                String firstName = rs.getString("firstName");
-                builder.setFirstName(firstName);
-
-                String lastName = rs.getString("lastName");
-                builder.setLastName(lastName);
-
-                String gender = rs.getString("gender");
-                builder.setGender(gender);
+                String firstName = rs.getString("fullName");
+                builder.setFullName(firstName);
 
                 String position = rs.getString("position");
                 builder.setPosition(position);
@@ -80,6 +113,9 @@ public class MySQLConnection {
 
                 String nationality = rs.getString("nationality");
                 builder.setNationality(nationality);
+
+                String imageUrl = rs.getString("imageUrl");
+                builder.setImageUrl(imageUrl);
 
                 result.add(builder.build());
 
