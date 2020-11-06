@@ -1,7 +1,7 @@
 package entity;
 
 public class Team {
-    private static int teamIDCounter = 0;
+    private static int teamIDCounter = 22;
     private final int teamID;
     private final String name;
 
@@ -16,6 +16,10 @@ public class Team {
 
     public String getName() {
         return name;
+    }
+
+    public static void setTeamIDCounter(int count) {
+        teamIDCounter = count;
     }
 
     @Override

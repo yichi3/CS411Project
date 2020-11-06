@@ -41,7 +41,19 @@ public class MySQLConnection {
             System.err.println("DB connection failed");
             return;
         }
-        String sql = "INSERT INTO Team (teamID, name) VALUES (?, ?)";
+        String sql = "SELECT teamID FROM Team WHERE name = ?";
+        try {
+            PreparedStatement statement = con.prepareStatement(sql);
+            statement.setString(1, team.getName());
+            ResultSet rs = statement.executeQuery();
+            if (rs.next()) {
+                System.out.println("Team " + team.getName() + " exists in database.");
+                return;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        sql = "INSERT INTO Team (teamID, name) VALUES (?, ?)";
         try {
             PreparedStatement statement = con.prepareStatement(sql);
             statement.setString(1, Integer.toString(team.getTeamID()));
@@ -57,7 +69,21 @@ public class MySQLConnection {
             System.err.println("DB connection failed");
             return;
         }
-        String sql = "INSERT INTO Player (playerID, teamID, fullName, commonName,"
+        // before insert player info, need check if the player info already in the database
+        String sql = "SELECT playerID FROM Player WHERE commonName = ?";
+        try {
+            PreparedStatement statement = con.prepareStatement(sql);
+            statement.setString(1, player.getCommonName());
+            ResultSet rs = statement.executeQuery();
+            if (rs.next()) {
+                System.out.println("Player " + player.getCommonName() + " exists in database.");
+                return;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        sql = "INSERT INTO Player (playerID, teamID, fullName, commonName,"
                     + "position, birthDate, nationality, imageUrl) VALUES"
                     + "(?, ?, ?, ?, ?, ?, ?, ?)";
         try {
@@ -74,6 +100,46 @@ public class MySQLConnection {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    public int getPlayerCount() {
+        if (con == null) {
+            System.err.println("DB connection failed");
+            return 0;
+        }
+        String sql = "SELECT COUNT(playerID) AS playerCount from Player";
+        int result = 0;
+        try {
+            PreparedStatement statement = con.prepareStatement(sql);
+            ResultSet rs = statement.executeQuery();
+            if (rs.next()) {
+                result = rs.getInt("playerCount");
+            }
+            statement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    public int getTeamCount() {
+        if (con == null) {
+            System.err.println("DB connection failed");
+            return 0;
+        }
+        String sql = "SELECT COUNT(teamID) AS teamCount from Team";
+        int result = 0;
+        try {
+            PreparedStatement statement = con.prepareStatement(sql);
+            ResultSet rs = statement.executeQuery();
+            if (rs.next()) {
+                result = rs.getInt("teamCount");
+            }
+            statement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return result;
     }
 
 

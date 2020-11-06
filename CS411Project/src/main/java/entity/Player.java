@@ -68,6 +68,10 @@ public class Player {
         return obj;
     }
 
+    public static void setPlayerIDCounter(int count) {
+        playerIDCounter = count;
+    }
+
     @Override
     public String toString() {
         return "Player{" +
