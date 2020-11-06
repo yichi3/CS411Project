@@ -1,7 +1,8 @@
 package db;
 import entity.Player;
 import entity.Player.*;
-
+import entity.User;
+import entity.User.*;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -97,8 +98,8 @@ public class MySQLConnection {
     public void insertUser(String userName,
                            String firstName,
                            String lastName,
-                           String phoneNumber,
-                           String email) {
+                           String email,
+                           String phone) {
 
 
         if (con == null) {
@@ -112,8 +113,9 @@ public class MySQLConnection {
             st.setString(1, userName);
             st.setString(2, firstName);
             st.setString(3, lastName);
-            st.setString(4, phoneNumber);
-            st.setString(5, email);
+            st.setString(4, email);
+            st.setString(5, phone);
+
 
 
             st.executeUpdate();
@@ -128,19 +130,56 @@ public class MySQLConnection {
     }
 
 
-    public void updateUser(String userName) {
+    public void updateUser(String userName,
+                           String firstName,
+                           String lastName,
+                           String email,
+                           String phone) {
 
         if (con == null) {
             System.err.println("DB connection failed");
             return;
         }
         try {
-            PreparedStatement st = con.prepareStatement("UPDATE User SET  WHERE");
+            PreparedStatement st1 = con.prepareStatement("SELECT * FROM UserTable WHERE userName = '?' ");
+            st1.setString(1, userName);
 
-            st.setString(1, redTeamName);
-            st.setString(2, blueTeamName);
-            st.setInt(3, redTeamKill);
-            st.setInt(4, blueTeamKill);
+            ResultSet rs = st1.executeQuery();
+
+            if (rs.next()) {
+
+                if(firstName.equals("")) {
+                    firstName = rs.getString("firstName");
+                }
+
+                if(lastName.equals("")) {
+                    lastName = rs.getString("lastName");
+                }
+
+                if(email.equals("")) {
+                    email = rs.getString("email");
+                }
+
+                if(phone.equals("")) {
+                    phone = rs.getString("phone");
+                }
+
+            }
+
+
+            PreparedStatement st = con.prepareStatement("UPDATE UserTable SET  firstName = '?', lastName = '?', email = '?', phone = '?' WHERE userName = '?' ");
+
+            st.setString(1, firstName);
+
+            st.setString(2, lastName);
+
+            st.setString(3, email);
+
+            st.setString(4, phone);
+
+            st.setString(5, userName);
+
+
             st.executeUpdate();
             st.close();
             con.close();
@@ -161,7 +200,7 @@ public class MySQLConnection {
         }
 
         try {
-            PreparedStatement st = con.prepareStatement("DELETE * FROM User WHERE userName = '?' ");
+            PreparedStatement st = con.prepareStatement("DELETE * FROM UserTable WHERE userName = '?' ");
 
             st.setString(1, userName);
 

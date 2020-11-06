@@ -7,7 +7,7 @@ public class User {
     private final String userName;
     private final String firstName;
     private final String lastName;
-    private final String phoneNumber;
+    private final String phone;
     private final String email;
 
 
@@ -15,7 +15,7 @@ public class User {
         this.userName = builder.userName;
         this.firstName = builder.firstName;
         this.lastName = builder.lastName;
-        this.phoneNumber = builder.phoneNumber;
+        this.phone = builder.phone;
         this.email = builder.email;
 
     }
@@ -32,8 +32,8 @@ public class User {
         return this.lastName;
     }
 
-    public String getPhoneNumber(String phoneNumber) {
-        return this.phoneNumber;
+    public String getPhone(String phone) {
+        return this.phone;
     }
 
     public String getEmail(String email) {
@@ -45,7 +45,7 @@ public class User {
         obj.put("user_name", userName);
         obj.put("first_name", firstName);
         obj.put("last_name", lastName);
-        obj.put("phone_number", phoneNumber);
+        obj.put("phone", phone);
         obj.put("email", email);
         return obj;
     }
@@ -56,7 +56,7 @@ public class User {
                 "userName='" + userName + '\'' +
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
-                ", phoneNumber='" + phoneNumber + '\'' +
+                ", phoneNumber='" + phone + '\'' +
                 ", email='" + email + '\'' +
                 '}';
     }
@@ -65,7 +65,7 @@ public class User {
         private String userName;
         private String firstName;
         private String lastName;
-        private String phoneNumber;
+        private String phone;
         private String email;
 
         public UserBuilder setUserName(String userName) {
@@ -83,8 +83,8 @@ public class User {
             return this;
         }
 
-        public UserBuilder getPhoneNumber(String phoneNumber) {
-            this.phoneNumber = phoneNumber;
+        public UserBuilder getPhone(String phone) {
+            this.phone = phone;
             return this;
         }
 
