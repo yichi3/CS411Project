@@ -1,5 +1,7 @@
 package entity;
 
+import org.json.JSONObject;
+
 public class User {
     private final String userName;
     private final String firstName;
@@ -44,6 +46,16 @@ public class User {
                 ", email='" + email + '\'' +
                 ", phone='" + phone + '\'' +
                 '}';
+    }
+
+    public JSONObject toJSONObject() {
+        JSONObject obj = new JSONObject();
+        obj.put("user_name", userName);
+        obj.put("first_name", firstName);
+        obj.put("last_name", lastName);
+        obj.put("email", email);
+        obj.put("phone", phone);
+        return obj;
     }
 
     public static class UserBuilder {
