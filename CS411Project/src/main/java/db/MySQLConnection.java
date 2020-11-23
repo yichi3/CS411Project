@@ -330,7 +330,7 @@ public class MySQLConnection {
 
     // argument is two lists of champion name, each contains 5 names
     // return the win rate of 1st chamlist
-    public double getWinRate(String[] chamList1, String[] chamList1) {
+    public double getWinRate(String[] chamList1, String[] chamList2) {
 
         if (con == null) {
             System.err.println("DB connection failed");
@@ -339,8 +339,7 @@ public class MySQLConnection {
         double result = -1;
         try {
             //query returns average value of every spec of champion (kills, deaths and assists is calculated as KDA)
-            PreparedStatement st =
-                    con.prepareStatement("SELECT championID, AVG((kills + assists) / deaths) AS KDA"
+            PreparedStatement st = con.prepareStatement("SELECT championID, AVG((kills + assists) / deaths) AS KDA"
 //                            + ", AVG(totalDamageDealt) AS totalDamageDealt, "
 //                            + "AVG(totalDamageDealtToChampion) AS totalDamageDealtToChampion, "
 //                            + "AVG(totalDamageTaken) AS totalDamageTaken, "
@@ -361,7 +360,7 @@ public class MySQLConnection {
 
             ResultSet rs = st.executeQuery();
 
-            double[] chamKDA1 = new double[chamList1];
+            double[] chamKDA1 = new double[chamList1.length];
 
             i = 0;
             while (rs.next()) {
@@ -375,7 +374,7 @@ public class MySQLConnection {
 
             rs = st.executeQuery();
 
-            double[] chamKDA2 = new double[chamList2];
+            double[] chamKDA2 = new double[chamList2.length];
 
             i = 0;
             while (rs.next()) {
@@ -409,7 +408,11 @@ public class MySQLConnection {
             temp2 += e;
         }
 
-        return (temp1 / (temp1 + temp2)) * 100 ;
+        if ((temp1 + temp2) > 0) {
+            return (temp1 / (temp1 + temp2)) * 100 ;
+        }
+        
+        return -1;
     }
 
 }
