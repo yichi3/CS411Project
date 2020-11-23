@@ -215,4 +215,34 @@ public class MySQLConnection {
 
     }
 
+    public double getWinRate(String cham_1,
+                             String cham_2,
+                             String cham_3,
+                             String cham_4,
+                             String cham_5,
+                             String cham_6,
+                             String cham_7,
+                             String cham_8,
+                             String cham_9,
+                             String cham_10) {
+        if (con == null) {
+            System.err.println("DB connection failed");
+            return -1;
+        }
+
+        try {
+            PreparedStatement st = con.prepareStatement("DELETE * FROM UserTable WHERE userName = ? GROUP BY ");
+
+            st.setString(1, userName);
+
+            st.executeUpdate();
+            st.close();
+            con.close();
+
+
+        } catch(SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
 }
