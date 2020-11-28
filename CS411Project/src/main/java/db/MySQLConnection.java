@@ -1,8 +1,8 @@
 package db;
 import entity.Player;
 import entity.Player.*;
-import entity.Team;
 import entity.User;
+import entity.Team;
 import entity.User.UserBuilder;
 
 import java.sql.Connection;
@@ -175,11 +175,227 @@ public class MySQLConnection {
             }
             st.close();
             con.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+
+    public boolean addUser(User user) {
+        if (con == null) {
+            System.err.println("DB connection failed");
+            return false;
+        }
+        String sql = "insert ignore into UserTable values(?, ?, ?, ?, ?)";
+        try {
+            PreparedStatement st = con.prepareStatement(sql);
+            st.setString(1, user.getUserName());
+            st.setString(2, user.getFirstName());
+            st.setString(3, user.getLastName());
+            st.setString(4, user.getEmail());
+            st.setString(5, user.getPhone());
+            return st.executeUpdate() == 1;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+
+    public boolean updateUser(String userName,
+                              String firstName,
+                              String lastName,
+                              String email,
+                              String phone) {
+        if (con == null) {
+            System.err.println("DB connection failed");
+            return false;
+        }
+        try {
+            PreparedStatement st1 = con.prepareStatement("SELECT * FROM UserTable WHERE userName = ? ");
+            st1.setString(1, userName);
+            ResultSet rs = st1.executeQuery();
+            if (rs.next()) {
+                if (firstName.equals("")) {
+                    firstName = rs.getString("firstName");
+                }
+                if (lastName.equals("")) {
+                    lastName = rs.getString("lastName");
+                }
+                if (email.equals("")) {
+                    email = rs.getString("email");
+                }
+                if (phone.equals("")) {
+                    phone = rs.getString("phone");
+                }
+            }
+            PreparedStatement st = con.prepareStatement("UPDATE UserTable SET firstName = ?, lastName = ?, email = ?, phone = ? WHERE userName = ? ");
+            st.setString(1, firstName);
+            st.setString(2, lastName);
+            st.setString(3, email);
+            st.setString(4, phone);
+            st.setString(5, userName);
+            return st.executeUpdate() == 1;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+
+    public boolean deleteUser(String userName) {
+        if (con == null) {
+            System.err.println("DB connection failed");
+            return false;
+        }
+        try {
+            PreparedStatement st = con.prepareStatement("DELETE FROM UserTable WHERE userName = ? ");
+            st.setString(1, userName);
+            return st.executeUpdate() == 1;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public Set<User> getUserInfo(String userName) {
+        if (con == null) {
+            System.err.println("DB connection failed");
+            return new HashSet<>();
+        }
+        Set<User> result = new HashSet<>();
+        try {
+            PreparedStatement st = con.prepareStatement(
+                    "SELECT * FROM UserTable WHERE userName = ? ");
+            st.setString(1, userName);
+            ResultSet rs = st.executeQuery();
+            if (rs.next()) {
+                UserBuilder builder = new UserBuilder();
+                builder.setUserName(userName);
+                String firstName = rs.getString("firstName");
+                builder.setFirstName(firstName);
+                String lastName = rs.getString("lastName");
+                builder.setLastName(lastName);
+                String email = rs.getString("email");
+                builder.setEmail(email);
+                String phone = rs.getString("phone");
+                builder.setPhone(phone);
+                result.add(builder.build());
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    public Map<String, Integer> playerCountByPosition(String teamName) {
+        Map<String, Integer> result = new HashMap<>();
+        if (con == null) {
+            System.err.println("DB connection failed");
+            return result;
+        }
+        String sql = "SELECT position, COUNT(playerID) AS count FROM Player NATURAL JOIN Team WHERE name = ? GROUP BY position";
+        try {
+            PreparedStatement statement = con.prepareStatement(sql);
+            statement.setString(1, teamName);
+            ResultSet rs = statement.executeQuery();
+            while (rs.next()) {
+                result.put(rs.getString("position"), rs.getInt("count"));
+            }
+            statement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    public Map<String, Integer> playerCountByNationality() {
+        Map<String, Integer> result = new HashMap<>();
+        if (con == null) {
+            System.err.println("DB connection failed");
+            return result;
+        }
+        String sql = "SELECT position, nationality, COUNT(playerID) AS count FROM Player NATURAL JOIN Team WHERE birthDate LIKE ? GROUP BY position, nationality";
+        try {
+            PreparedStatement statement = con.prepareStatement(sql);
+            statement.setString(1, "%200%");
+            ResultSet rs = statement.executeQuery();
+            while (rs.next()) {
+                result.put(rs.getString("position") + ", " + rs.getString("nationality"), rs.getInt("count"));
+            }
+            statement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    // argument is two lists of champion name, each contains 5 names
+    // return the win rate of 1st chamlist
+    public double getWinRate(String[] chamList1, String[] chamList2) {
+
+        if (con == null) {
+            System.err.println("DB connection failed");
+            return -1;
+        }
+        double result = -1;
+        try {
+            //query returns average value of every spec of champion (kills, deaths and assists is calculated as KDA)
+            PreparedStatement st = con.prepareStatement("SELECT championID, AVG((kills + assists) / deaths) AS KDA"
+//                            + ", AVG(totalDamageDealt) AS totalDamageDealt, "
+//                            + "AVG(totalDamageDealtToChampion) AS totalDamageDealtToChampion, "
+//                            + "AVG(totalDamageTaken) AS totalDamageTaken, "
+//                            + "AVG(towerKills) AS towerKills, "
+//                            + "AVG(inhibitorKills) AS inhibitorKills, "
+//                            + "AVG(goldEarned) AS goldEarned, "
+//                            + "AVG(totalMinionsKilled) AS totalMinionsKilled, "
+//                            + "AVG(neutralMinionsKIlled) AS neutralMinionsKIlled"
+                            + "FROM PlayerPerformance"
+                            + "WHERE championID IN (SELECT championID FROM Champion WHERE name IN (?, ?, ?, ?, ?)) "
+                            + "GROUP BY championID");
+
+
+            int i = 0;
+            for (i = 0; i < chamList1.length; i++) {
+                st.setString(i + 1, chamList1[i]);
+            }
+
+            ResultSet rs = st.executeQuery();
+
+            double[] chamKDA1 = new double[chamList1.length];
+
+            i = 0;
+            while (rs.next()) {
+                chamKDA1[i] = rs.getDouble("KDA");
+                i++;
+            }
+
+            for (i = 0; i < chamList2.length; i++) {
+                st.setString(i + 1 + chamList1.length, chamList2[i]);
+            }
+
+            rs = st.executeQuery();
+
+            double[] chamKDA2 = new double[chamList2.length];
+
+            i = 0;
+            while (rs.next()) {
+                chamKDA2[i] = rs.getDouble("KDA");
+                i++;
+            }
+
+            result = calculateWinRate(chamKDA1, chamKDA2);
+
+            st.executeUpdate();
+            st.close();
+            con.close();
         } catch(SQLException e) {
             e.printStackTrace();
         }
         return result;
     }
+
 
 
     public boolean addUser(User user) {
@@ -331,89 +547,23 @@ public class MySQLConnection {
         return result;
     }
 
-//    public void insertGame(String redTeamName,
-//                           String blueTeamName,
-//                           int redTeamKill,
-//                           int blueTeamKill) {
-//
-//        if (con == null) {
-//            System.err.println("DB connection failed");
-//            return;
-//        }
-//        try {
-//
-//            PreparedStatement st = con.prepareStatement("insert into Game values(?, ?, ?, ?)");
-//
-//            st.setString(1, redTeamName);
-//            st.setString(2, blueTeamName);
-//            st.setInt(3, redTeamKill);
-//            st.setInt(4, blueTeamKill);
-//
-//            st.executeUpdate();
-//            st.close();
-//            con.close();
-//
-//
-//        } catch(SQLException e) {
-//            e.printStackTrace();
-//        }
-//
-//    }
-//
-//    public void updateGame(String redTeamName,
-//                           String blueTeamName,
-//                           int redTeamKill,
-//                           int blueTeamKill) {
-//
-//        if (con == null) {
-//            System.err.println("DB connection failed");
-//            return;
-//        }
-//        try {
-//            PreparedStatement st = con.prepareStatement("UPDATE Game SET  WHERE");
-//
-//            st.setString(1, redTeamName);
-//            st.setString(2, blueTeamName);
-//            st.setInt(3, redTeamKill);
-//            st.setInt(4, blueTeamKill);
-//            st.executeUpdate();
-//            st.close();
-//            con.close();
-//
-//
-//        } catch(SQLException e) {
-//            e.printStackTrace();
-//        }
-//
-//    }
-//
-//    public void deleteGame(String redTeamName,
-//                           String blueTeamName,
-//                           int redTeamKill,
-//                           int blueTeamKill) {
-//
-//        if (con == null) {
-//            System.err.println("DB connection failed");
-//            return;
-//        }
-//
-//        try {
-//            PreparedStatement st = con.prepareStatement("DELETE FROM Game WHERE ");
-//
-//            st.setString(1, redTeamName);
-//            st.setString(2, blueTeamName);
-//            st.setInt(3, redTeamKill);
-//            st.setInt(4, blueTeamKill);
-//
-//            st.executeUpdate();
-//            st.close();
-//            con.close();
-//
-//
-//        } catch(SQLException e) {
-//            e.printStackTrace();
-//        }
-//
-//    }
-//
+    // return the win rate of 1st team in percentage
+    public double calculateWinRate(double[] list1, double[] list2) {
+
+        double temp1 = 0, temp2 = 0;
+        for(double e: list1) {
+            temp1 += e;
+        }
+
+        for(double e: list2) {
+            temp2 += e;
+        }
+
+        if ((temp1 + temp2) > 0) {
+            return (temp1 / (temp1 + temp2)) * 100 ;
+        }
+        
+        return -1;
+    }
+
 }
