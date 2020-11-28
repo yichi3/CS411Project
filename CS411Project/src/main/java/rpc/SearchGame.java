@@ -21,15 +21,15 @@ public class SearchGame extends HttpServlet {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType("application/json");
-        Game game = new GameBuilder().setRedTeamName("DWG")
-                                        .setBlueTeamName("SN")
-                                        .setRedTeamKill(10)
-                                        .setBlueTeamKill(1000).build();
-        JSONObject obj = game.toJSONObject();
+//        Game game = new GameBuilder().setRedTeamName("DWG")
+//                                        .setBlueTeamName("SN")
+//                                        .setRedTeamKill(10)
+//                                        .setBlueTeamKill(1000).build();
+//        JSONObject obj = game.toJSONObject();
 //        PrintWriter out = response.getWriter();
 //        String test = new Gson().toJson(game);
 //        out.print(test);
-        RpcHelper.writeJsonObject(response, obj);
+//        RpcHelper.writeJsonObject(response, obj);
     }
 }
 

@@ -2,7 +2,9 @@ package rpc;
 
 import db.MySQLConnection;
 import entity.Player;
+import entity.User;
 import org.json.JSONArray;
+import org.json.JSONObject;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -12,7 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Set;
 
-@WebServlet("/search_player")
+@WebServlet("/player")
 public class SearchPlayer extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         doGet(request, response);
