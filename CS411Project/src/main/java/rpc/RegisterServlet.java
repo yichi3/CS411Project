@@ -1,7 +1,6 @@
 package rpc;
 
-import db.MySQLConnection;
-import entity.Player;
+import db.Neo4jConnection;
 import entity.User;
 import entity.User.UserBuilder;
 import org.json.JSONArray;
@@ -13,27 +12,31 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Set;
+import static db.MySQLDBUtil.*;
 
-@WebServlet("/user")
-public class UserServlet extends HttpServlet {
+@WebServlet("/register")
+public class RegisterServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         JSONObject input = RpcHelper.readJSONObject(request);
-        String userName = input.getString("user_name");
-        String firstName = input.getString("first_name");
-        String lastName = input.getString("last_name");
+        String gameID = input.getString("user_name");
         String email = input.getString("email");
         String phone = input.getString("phone");
+        String password = input.getString("password");
+        String position = input.getString("position");
+        String champion = input.getString("fav_champ");
         User newUser = new UserBuilder()
-                        .setUserName(userName)
-                        .setFirstName(firstName)
-                        .setLastName(lastName)
+                        .setGameID(gameID)
                         .setEmail(email)
                         .setPhone(phone)
+                        .setPassword(password)
+                        .setFavoritePosition(position)
+                        .setFavoriteChampion(champion)
                         .build();
-        MySQLConnection con = new MySQLConnection();
+        Neo4jConnection con = new Neo4jConnection(Neo4jURI, Neo4jUSERNAME, Neo4jPASSWORD);
         JSONObject obj = new JSONObject();
         if (con.addUser(newUser)) {
+            con.userBindPosition(newUser);
+            con.userBindChampion(newUser);
             obj.put("status", "OK");
         } else {
             obj.put("status", "User Already Exists");
@@ -43,41 +46,39 @@ public class UserServlet extends HttpServlet {
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String userName = request.getParameter("user_name");
-        MySQLConnection con = new MySQLConnection();
-        Set<User> userSet = con.getUserInfo(userName);
+        String gameID = request.getParameter("user_name");
+        Neo4jConnection con = new Neo4jConnection(Neo4jURI, Neo4jUSERNAME, Neo4jPASSWORD);
+        User user = con.getUserInfo(gameID);
         con.close();
         JSONArray array = new JSONArray();
-        for (User user: userSet) {
-            array.put(user.toJSONObject());
-        }
+        array.put(user.toJSONObject());
         RpcHelper.writeJsonArray(response, array);
     }
 
-    @Override
-    protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String userName = request.getParameter("user_name");
-        MySQLConnection con = new MySQLConnection();
-        JSONObject obj = new JSONObject();
-        if (con.deleteUser(userName)) {
-            obj.put("status", "OK");
-        } else {
-            obj.put("status", "User Delete Failed");
-        }
-    }
+//    @Override
+//    protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+//        String userName = request.getParameter("user_name");
+//        MySQLConnection con = new MySQLConnection();
+//        JSONObject obj = new JSONObject();
+//        if (con.deleteUser(userName)) {
+//            obj.put("status", "OK");
+//        } else {
+//            obj.put("status", "User Delete Failed");
+//        }
+//    }
 
     @Override
     protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         // update user information here
-        String userName = request.getParameter("user_name");
+        String gameID = request.getParameter("user_name");
         JSONObject input = RpcHelper.readJSONObject(request);
-        String firstName = input.getString("first_name");
-        String lastName = input.getString("last_name");
         String email = input.getString("email");
         String phone = input.getString("phone");
-        MySQLConnection con = new MySQLConnection();
+        String position = input.getString("position");
+        String champion = input.getString("fav_champ");
+        Neo4jConnection con = new Neo4jConnection(Neo4jURI, Neo4jUSERNAME, Neo4jPASSWORD);
         JSONObject obj = new JSONObject();
-        if (con.updateUser(userName, firstName, lastName, email, phone)) {
+        if (con.updateUser(gameID, email, phone, position, champion)) {
             obj.put("status", "OK");
         } else {
             obj.put("status", "User Update Failed");
