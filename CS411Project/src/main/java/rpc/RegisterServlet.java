@@ -39,7 +39,8 @@ public class RegisterServlet extends HttpServlet {
             con.userBindChampion(newUser);
             obj.put("status", "OK");
         } else {
-            obj.put("status", "User Already Exists");
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            return;
         }
         con.close();
         RpcHelper.writeJsonObject(response, obj);
@@ -55,35 +56,18 @@ public class RegisterServlet extends HttpServlet {
         RpcHelper.writeJsonArray(response, array);
     }
 
-//    @Override
-//    protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-//        String userName = request.getParameter("user_name");
-//        MySQLConnection con = new MySQLConnection();
-//        JSONObject obj = new JSONObject();
-//        if (con.deleteUser(userName)) {
-//            obj.put("status", "OK");
-//        } else {
-//            obj.put("status", "User Delete Failed");
-//        }
-//    }
+    @Override
+    protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String userName = request.getParameter("user_name");
+        Neo4jConnection con = new Neo4jConnection(Neo4jURI, Neo4jUSERNAME, Neo4jPASSWORD);
+        con.deleteUser(userName);
+        con.close();
+    }
 
     @Override
     protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         // update user information here
-        String gameID = request.getParameter("user_name");
-        JSONObject input = RpcHelper.readJSONObject(request);
-        String email = input.getString("email");
-        String phone = input.getString("phone");
-        String position = input.getString("position");
-        String champion = input.getString("fav_champ");
-        Neo4jConnection con = new Neo4jConnection(Neo4jURI, Neo4jUSERNAME, Neo4jPASSWORD);
-        JSONObject obj = new JSONObject();
-        if (con.updateUser(gameID, email, phone, position, champion)) {
-            obj.put("status", "OK");
-        } else {
-            obj.put("status", "User Update Failed");
-        }
-        con.close();
-        RpcHelper.writeJsonObject(response, obj);
+        doDelete(request, response);
+        doPost(request, response);
     }
 }

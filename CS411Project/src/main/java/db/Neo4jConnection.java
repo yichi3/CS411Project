@@ -51,19 +51,23 @@ public class Neo4jConnection implements AutoCloseable {
         }
     }
 
-    public boolean updateUser(String gameID, String email, String phone, String position, String champion) {
+//    public boolean updateUser(User user) {
+//        try (Session session = driver.session()) {
+//            String delete = String.format("MATCH (a:User) WHERE a.gameID = '%s'" +
+//                    "DETACH DELETE a", user.getGameID());
+//            session.run(delete);
+//            String query = String.format("CREATE (a:User {gameID: '%s', password: '%s', email: '%s', phone: '%s'})",
+//                    user.getGameID(), user.getPassword(), user.getEmail(), user.getPhone());
+//            session.run(query);
+//            return true;
+//        }
+//    }
+
+    public void deleteUser(String gameID) {
         try (Session session = driver.session()) {
-            String search = String.format("MATCH (a:User) WHERE a.gameID = '%s'" +
-                    "RETURN a.gameID", gameID);
-            Result result = session.run(search);
-            if (result.hasNext()) {
-                return false;
-            }
-            String query = String.format("MATCH (a:User {gameID: '%s'})" +
-                    "SET a.email = '%s', a.phone = '%s', a.position = '%s', a.champion = '%s'",
-                    gameID, email, phone, position, champion);
-            session.run(query);
-            return true;
+            String delete = String.format("MATCH (a:User) WHERE a.gameID = '%s'" +
+                    "DETACH DELETE a", gameID);
+            session.run(delete);
         }
     }
 
