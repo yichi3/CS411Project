@@ -11,4 +11,7 @@ public class MySQLDBUtil {
             + "?user=" + USERNAME + "&password=" + PASSWORD
             + "&autoReconnect=true&serverTimezone=UTC";
 
+    public static final String Neo4jURI = "bolt://localhost:7687";
+    public static final String Neo4jUSERNAME = "neo4j";
+    public static final String Neo4jPASSWORD = "cs411group46";
 }
