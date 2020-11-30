@@ -384,7 +384,6 @@ public class MySQLConnection {
             }
 
 
-
             result = calculateWinRate(chamStat1, chamStat2);
 
             cs.executeUpdate();
