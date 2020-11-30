@@ -1,32 +1,20 @@
 package entity;
 
 public class Team {
-    private static int teamIDCounter = 22;
-    private final int teamID;
-    private final String name;
+    private final String teamName;
 
-    public Team(String name) {
-        teamID = teamIDCounter++;
-        this.name = name;
+    public Team(String teamName) {
+        this.teamName = teamName;
     }
 
-    public int getTeamID() {
-        return teamID;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public static void setTeamIDCounter(int count) {
-        teamIDCounter = count;
+    public String getTeamName() {
+        return teamName;
     }
 
     @Override
     public String toString() {
         return "Team{" +
-                "teamID=" + teamID +
-                ", name='" + name + '\'' +
+                "teamName='" + teamName + '\'' +
                 '}';
     }
 }
