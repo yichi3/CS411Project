@@ -342,61 +342,59 @@ public class MySQLConnection {
         double result = -1;
         try {
             //query returns average value of every spec of champion (kills, deaths and assists is calculated as KDA)
-            CallableStatement cs = con.prepareCall("{call getChampionStat(?, ?, ?, ?, ?)}");
+            PreparedStatement st = con.prepareStatement("SELECT championID, AVG((kills + assists) / deaths) AS KDA"
+//                            + ", AVG(totalDamageDealt) AS totalDamageDealt, "
+//                            + "AVG(totalDamageDealtToChampion) AS totalDamageDealtToChampion, "
+//                            + "AVG(totalDamageTaken) AS totalDamageTaken, "
+//                            + "AVG(towerKills) AS towerKills, "
+//                            + "AVG(inhibitorKills) AS inhibitorKills, "
+//                            + "AVG(goldEarned) AS goldEarned, "
+//                            + "AVG(totalMinionsKilled) AS totalMinionsKilled, "
+//                            + "AVG(neutralMinionsKIlled) AS neutralMinionsKIlled"
+                    + "FROM PlayerPerformance "
+                    + "WHERE championID IN (SELECT championID FROM Champion WHERE name IN (?, ?, ?, ?, ?)) "
+                    + "GROUP BY championID");
 
-            double[] chamStat1 = new double[chamList1.length];
-            double[] chamStat2 = new double[chamList2.length];
 
-            //get the champion statistics for list 1
-            //  1.set up parameters
-            int i = 0;
+            int i;
             for (i = 0; i < chamList1.length; i++) {
-                cs.setString(i + 1, chamList1[i]);
+                st.setString(i + 1, chamList1[i]);
             }
 
-            //2. execute the query
-            ResultSet rs = cs.executeQuery();
+            ResultSet rs = st.executeQuery();
 
-            //3. get the result set
-            // (TODO: more statistics should be used)
+            double[] chamKDA1 = new double[chamList1.length];
+
             i = 0;
             while (rs.next()) {
                 chamKDA1[i] = rs.getDouble("KDA");
                 i++;
             }
 
-
-            //get the champion statistics for list 2
-            //  1.set up parameters
             for (i = 0; i < chamList2.length; i++) {
-                cs.setString(i + 1, chamList2[i]);
+                st.setString(i + 1 + chamList1.length, chamList2[i]);
             }
 
-            //2. execute the query
-            rs = cs.executeQuery();
+            rs = st.executeQuery();
 
-            //3. get the result set
-            // (TODO: more statistics should be used)
+            double[] chamKDA2 = new double[chamList2.length];
+
             i = 0;
             while (rs.next()) {
                 chamKDA2[i] = rs.getDouble("KDA");
                 i++;
             }
 
+            result = calculateWinRate(chamKDA1, chamKDA2);
 
-            result = calculateWinRate(chamStat1, chamStat2);
-
-            cs.executeUpdate();
-            cs.close();
+            st.executeUpdate();
+            st.close();
             con.close();
-
         } catch(SQLException e) {
             e.printStackTrace();
         }
-
         return result;
     }
-
 
 
     public boolean addUser(User user) {
