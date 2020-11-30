@@ -3,18 +3,15 @@ package entity;
 import org.json.JSONObject;
 
 public class Player {
-    private static int playerIDCounter = 0;
-    private final int playerID;
+    private final String commonName;
     private final String teamName;
     private final String fullName;
-    private final String commonName;
     private final String position;
     private final String birthDate;
     private final String nationality;
     private final String imageUrl;
 
     private Player(PlayerBuilder builder) {
-        this.playerID = playerIDCounter++;
         this.teamName = builder.teamName;
         this.fullName = builder.fullName;
         this.commonName = builder.commonName;
@@ -22,10 +19,6 @@ public class Player {
         this.birthDate = builder.birthDate;
         this.nationality = builder.nationality;
         this.imageUrl = builder.imageUrl;
-    }
-
-    public int getPlayerID() {
-        return playerID;
     }
 
     public String getTeamName() {
@@ -66,10 +59,6 @@ public class Player {
         obj.put("nationality", nationality);
         obj.put("image_url", imageUrl);
         return obj;
-    }
-
-    public static void setPlayerIDCounter(int count) {
-        playerIDCounter = count;
     }
 
     @Override
