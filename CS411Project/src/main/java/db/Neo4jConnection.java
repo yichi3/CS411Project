@@ -40,8 +40,9 @@ public class Neo4jConnection implements AutoCloseable {
 
     public User getUserInfo(String gameID) {
         try (Session session = driver.session()) {
-            String search = String.format("MATCH (a:User) WHERE a.gameID = '%s'" +
-                    "RETURN a.gameID", gameID);
+            String search = String.format("MATCH (c:Champion)<-[:Plays]-(a:User)-[:PositionAt]->(b:Position) " +
+                    "WHERE a.gameID = '%s' RETURN a.gameID AS gameID, a.email as email, " +
+                    "a.phone AS phone, b.position AS position, c.name as champion", gameID);
             Result result = session.run(search);
             if (!result.hasNext()) {
                 return new User();

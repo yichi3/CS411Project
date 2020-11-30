@@ -50,6 +50,7 @@ public class RegisterServlet extends HttpServlet {
         String gameID = request.getParameter("user_name");
         Neo4jConnection con = new Neo4jConnection(Neo4jURI, Neo4jUSERNAME, Neo4jPASSWORD);
         User user = con.getUserInfo(gameID);
+        System.out.println(user.toString());
         con.close();
         JSONArray array = new JSONArray();
         array.put(user.toJSONObject());
@@ -58,16 +59,36 @@ public class RegisterServlet extends HttpServlet {
 
     @Override
     protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String userName = request.getParameter("user_name");
+        JSONObject input = RpcHelper.readJSONObject(request);
+        String gameID = input.getString("user_name");
         Neo4jConnection con = new Neo4jConnection(Neo4jURI, Neo4jUSERNAME, Neo4jPASSWORD);
-        con.deleteUser(userName);
+        con.deleteUser(gameID);
         con.close();
     }
 
     @Override
     protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         // update user information here
-        doDelete(request, response);
-        doPost(request, response);
+        JSONObject input = RpcHelper.readJSONObject(request);
+        String gameID = input.getString("user_name");
+        Neo4jConnection con = new Neo4jConnection(Neo4jURI, Neo4jUSERNAME, Neo4jPASSWORD);
+        con.deleteUser(gameID);
+        String phone = input.getString("phone");
+        String email = input.getString("email");
+        String password = input.getString("password");
+        String position = input.getString("position");
+        String champion = input.getString("fav_champ");
+        User newUser = new UserBuilder()
+                .setGameID(gameID)
+                .setEmail(email)
+                .setPhone(phone)
+                .setPassword(password)
+                .setFavoritePosition(position)
+                .setFavoriteChampion(champion)
+                .build();
+        con.addUser(newUser);
+        con.userBindPosition(newUser);
+        con.userBindChampion(newUser);
+        con.close();
     }
 }
