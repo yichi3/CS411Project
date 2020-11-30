@@ -1,9 +1,7 @@
 package db;
 import entity.Player;
 import entity.Player.*;
-import entity.User;
 import entity.Team;
-import entity.User.UserBuilder;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -56,9 +54,9 @@ public class MySQLConnection {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        sql = "INSERT INTO Team (teamID, name) VALUES (?, ?)";
+        String sql2 = "INSERT INTO Team (teamID, name) VALUES (?, ?)";
         try {
-            PreparedStatement statement = con.prepareStatement(sql);
+            PreparedStatement statement = con.prepareStatement(sql2);
             statement.setString(1, Integer.toString(team.getTeamID()));
             statement.setString(2, team.getName());
             statement.executeUpdate();
@@ -85,11 +83,11 @@ public class MySQLConnection {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        sql = "INSERT INTO Player (playerID, teamID, fullName, commonName,"
+        String sql2 = "INSERT INTO Player (playerID, teamID, fullName, commonName,"
                 + "position, birthDate, nationality, imageUrl) VALUES"
                 + "(?, ?, ?, ?, ?, ?, ?, ?)";
         try {
-            PreparedStatement statement = con.prepareStatement(sql);
+            PreparedStatement statement = con.prepareStatement(sql2);
             statement.setString(1, Integer.toString(player.getPlayerID()));
             statement.setString(2, Integer.toString(teamID));
             statement.setString(3, player.getFullName());
@@ -182,112 +180,112 @@ public class MySQLConnection {
     }
 
 
-    public boolean addUser(User user) {
-        if (con == null) {
-            System.err.println("DB connection failed");
-            return false;
-        }
-        String sql = "insert ignore into UserTable values(?, ?, ?, ?, ?)";
-        try {
-            PreparedStatement st = con.prepareStatement(sql);
-            st.setString(1, user.getUserName());
-            st.setString(2, user.getFirstName());
-            st.setString(3, user.getLastName());
-            st.setString(4, user.getEmail());
-            st.setString(5, user.getPhone());
-            return st.executeUpdate() == 1;
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
+//    public boolean addUser(User user) {
+//        if (con == null) {
+//            System.err.println("DB connection failed");
+//            return false;
+//        }
+//        String sql = "insert ignore into UserTable values(?, ?, ?, ?, ?)";
+//        try {
+//            PreparedStatement st = con.prepareStatement(sql);
+//            st.setString(1, user.getUserName());
+//            st.setString(2, user.getFirstName());
+//            st.setString(3, user.getLastName());
+//            st.setString(4, user.getEmail());
+//            st.setString(5, user.getPhone());
+//            return st.executeUpdate() == 1;
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//        }
+//        return false;
+//    }
 
 
-    public boolean updateUser(String userName,
-                              String firstName,
-                              String lastName,
-                              String email,
-                              String phone) {
-        if (con == null) {
-            System.err.println("DB connection failed");
-            return false;
-        }
-        try {
-            PreparedStatement st1 = con.prepareStatement("SELECT * FROM UserTable WHERE userName = ? ");
-            st1.setString(1, userName);
-            ResultSet rs = st1.executeQuery();
-            if (rs.next()) {
-                if (firstName.equals("")) {
-                    firstName = rs.getString("firstName");
-                }
-                if (lastName.equals("")) {
-                    lastName = rs.getString("lastName");
-                }
-                if (email.equals("")) {
-                    email = rs.getString("email");
-                }
-                if (phone.equals("")) {
-                    phone = rs.getString("phone");
-                }
-            }
-            PreparedStatement st = con.prepareStatement("UPDATE UserTable SET firstName = ?, lastName = ?, email = ?, phone = ? WHERE userName = ? ");
-            st.setString(1, firstName);
-            st.setString(2, lastName);
-            st.setString(3, email);
-            st.setString(4, phone);
-            st.setString(5, userName);
-            return st.executeUpdate() == 1;
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
+//    public boolean updateUser(String userName,
+//                              String firstName,
+//                              String lastName,
+//                              String email,
+//                              String phone) {
+//        if (con == null) {
+//            System.err.println("DB connection failed");
+//            return false;
+//        }
+//        try {
+//            PreparedStatement st1 = con.prepareStatement("SELECT * FROM UserTable WHERE userName = ? ");
+//            st1.setString(1, userName);
+//            ResultSet rs = st1.executeQuery();
+//            if (rs.next()) {
+//                if (firstName.equals("")) {
+//                    firstName = rs.getString("firstName");
+//                }
+//                if (lastName.equals("")) {
+//                    lastName = rs.getString("lastName");
+//                }
+//                if (email.equals("")) {
+//                    email = rs.getString("email");
+//                }
+//                if (phone.equals("")) {
+//                    phone = rs.getString("phone");
+//                }
+//            }
+//            PreparedStatement st = con.prepareStatement("UPDATE UserTable SET firstName = ?, lastName = ?, email = ?, phone = ? WHERE userName = ? ");
+//            st.setString(1, firstName);
+//            st.setString(2, lastName);
+//            st.setString(3, email);
+//            st.setString(4, phone);
+//            st.setString(5, userName);
+//            return st.executeUpdate() == 1;
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//        }
+//        return false;
+//    }
 
 
-    public boolean deleteUser(String userName) {
-        if (con == null) {
-            System.err.println("DB connection failed");
-            return false;
-        }
-        try {
-            PreparedStatement st = con.prepareStatement("DELETE FROM UserTable WHERE userName = ? ");
-            st.setString(1, userName);
-            return st.executeUpdate() == 1;
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
+//    public boolean deleteUser(String userName) {
+//        if (con == null) {
+//            System.err.println("DB connection failed");
+//            return false;
+//        }
+//        try {
+//            PreparedStatement st = con.prepareStatement("DELETE FROM UserTable WHERE userName = ? ");
+//            st.setString(1, userName);
+//            return st.executeUpdate() == 1;
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//        }
+//        return false;
+//    }
 
-    public Set<User> getUserInfo(String userName) {
-        if (con == null) {
-            System.err.println("DB connection failed");
-            return new HashSet<>();
-        }
-        Set<User> result = new HashSet<>();
-        try {
-            PreparedStatement st = con.prepareStatement(
-                    "SELECT * FROM UserTable WHERE userName = ? ");
-            st.setString(1, userName);
-            ResultSet rs = st.executeQuery();
-            if (rs.next()) {
-                UserBuilder builder = new UserBuilder();
-                builder.setUserName(userName);
-                String firstName = rs.getString("firstName");
-                builder.setFirstName(firstName);
-                String lastName = rs.getString("lastName");
-                builder.setLastName(lastName);
-                String email = rs.getString("email");
-                builder.setEmail(email);
-                String phone = rs.getString("phone");
-                builder.setPhone(phone);
-                result.add(builder.build());
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return result;
-    }
+//    public Set<User> getUserInfo(String userName) {
+//        if (con == null) {
+//            System.err.println("DB connection failed");
+//            return new HashSet<>();
+//        }
+//        Set<User> result = new HashSet<>();
+//        try {
+//            PreparedStatement st = con.prepareStatement(
+//                    "SELECT * FROM UserTable WHERE userName = ? ");
+//            st.setString(1, userName);
+//            ResultSet rs = st.executeQuery();
+//            if (rs.next()) {
+//                UserBuilder builder = new UserBuilder();
+//                builder.setUserName(userName);
+//                String firstName = rs.getString("firstName");
+//                builder.setFirstName(firstName);
+//                String lastName = rs.getString("lastName");
+//                builder.setLastName(lastName);
+//                String email = rs.getString("email");
+//                builder.setEmail(email);
+//                String phone = rs.getString("phone");
+//                builder.setPhone(phone);
+//                result.add(builder.build());
+//            }
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//        }
+//        return result;
+//    }
 
     public Map<String, Integer> playerCountByPosition(String teamName) {
         Map<String, Integer> result = new HashMap<>();
@@ -351,9 +349,11 @@ public class MySQLConnection {
 //                            + "AVG(goldEarned) AS goldEarned, "
 //                            + "AVG(totalMinionsKilled) AS totalMinionsKilled, "
 //                            + "AVG(neutralMinionsKIlled) AS neutralMinionsKIlled"
+
                     + "FROM PlayerPerformance "
                     + "WHERE championID IN (SELECT championID FROM Champion WHERE name IN (?, ?, ?, ?, ?)) "
                     + "GROUP BY championID");
+
 
 
             int i;
@@ -391,156 +391,6 @@ public class MySQLConnection {
             st.close();
             con.close();
         } catch(SQLException e) {
-            e.printStackTrace();
-        }
-        return result;
-    }
-
-
-    public boolean addUser(User user) {
-        if (con == null) {
-            System.err.println("DB connection failed");
-            return false;
-        }
-        String sql = "insert ignore into UserTable values(?, ?, ?, ?, ?)";
-        try {
-            PreparedStatement st = con.prepareStatement(sql);
-            st.setString(1, user.getUserName());
-            st.setString(2, user.getFirstName());
-            st.setString(3, user.getLastName());
-            st.setString(4, user.getEmail());
-            st.setString(5, user.getPhone());
-            return st.executeUpdate() == 1;
-        } catch(SQLException e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
-
-
-    public boolean updateUser(String userName,
-                           String firstName,
-                           String lastName,
-                           String email,
-                           String phone) {
-        if (con == null) {
-            System.err.println("DB connection failed");
-            return false;
-        }
-        try {
-            PreparedStatement st1 = con.prepareStatement("SELECT * FROM UserTable WHERE userName = ? ");
-            st1.setString(1, userName);
-            ResultSet rs = st1.executeQuery();
-            if (rs.next()) {
-                if(firstName.equals("")) {
-                    firstName = rs.getString("firstName");
-                }
-                if(lastName.equals("")) {
-                    lastName = rs.getString("lastName");
-                }
-                if(email.equals("")) {
-                    email = rs.getString("email");
-                }
-                if(phone.equals("")) {
-                    phone = rs.getString("phone");
-                }
-            }
-            PreparedStatement st = con.prepareStatement("UPDATE UserTable SET firstName = ?, lastName = ?, email = ?, phone = ? WHERE userName = ? ");
-            st.setString(1, firstName);
-            st.setString(2, lastName);
-            st.setString(3, email);
-            st.setString(4, phone);
-            st.setString(5, userName);
-            return st.executeUpdate() == 1;
-        } catch(SQLException e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
-
-
-    public boolean deleteUser(String userName) {
-        if (con == null) {
-            System.err.println("DB connection failed");
-            return false;
-        }
-        try {
-            PreparedStatement st = con.prepareStatement("DELETE FROM UserTable WHERE userName = ? ");
-            st.setString(1, userName);
-            return st.executeUpdate() == 1;
-        } catch(SQLException e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
-
-    public Set<User> getUserInfo(String userName) {
-        if (con == null) {
-            System.err.println("DB connection failed");
-            return new HashSet<>();
-        }
-        Set<User> result = new HashSet<>();
-        try {
-            PreparedStatement st = con.prepareStatement(
-                    "SELECT * FROM UserTable WHERE userName = ? ");
-            st.setString(1, userName);
-            ResultSet rs = st.executeQuery();
-            if (rs.next()) {
-                UserBuilder builder = new UserBuilder();
-                builder.setUserName(userName);
-                String firstName = rs.getString("firstName");
-                builder.setFirstName(firstName);
-                String lastName = rs.getString("lastName");
-                builder.setLastName(lastName);
-                String email = rs.getString("email");
-                builder.setEmail(email);
-                String phone = rs.getString("phone");
-                builder.setPhone(phone);
-                result.add(builder.build());
-            }
-        } catch(SQLException e) {
-            e.printStackTrace();
-        }
-        return result;
-    }
-
-    public Map<String, Integer> playerCountByPosition(String teamName) {
-        Map<String, Integer> result = new HashMap<>();
-        if (con == null) {
-            System.err.println("DB connection failed");
-            return result;
-        }
-        String sql = "SELECT position, COUNT(playerID) AS count FROM Player NATURAL JOIN Team WHERE name = ? GROUP BY position";
-        try {
-            PreparedStatement statement = con.prepareStatement(sql);
-            statement.setString(1, teamName);
-            ResultSet rs = statement.executeQuery();
-            while (rs.next()) {
-                result.put(rs.getString("position"), rs.getInt("count"));
-            }
-            statement.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return result;
-    }
-
-    public Map<String, Integer> playerCountByNationality() {
-        Map<String, Integer> result = new HashMap<>();
-        if (con == null) {
-            System.err.println("DB connection failed");
-            return result;
-        }
-        String sql = "SELECT position, nationality, COUNT(playerID) AS count FROM Player NATURAL JOIN Team WHERE birthDate LIKE ? GROUP BY position, nationality";
-        try {
-            PreparedStatement statement = con.prepareStatement(sql);
-            statement.setString(1, "%200%");
-            ResultSet rs = statement.executeQuery();
-            while (rs.next()) {
-                result.put(rs.getString("position") + ", " + rs.getString("nationality"), rs.getInt("count"));
-            }
-            statement.close();
-        } catch (SQLException e) {
             e.printStackTrace();
         }
         return result;
