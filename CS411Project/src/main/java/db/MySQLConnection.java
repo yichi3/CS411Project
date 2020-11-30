@@ -54,11 +54,10 @@ public class MySQLConnection {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        String sql2 = "INSERT INTO Team (teamID, name) VALUES (?, ?)";
+        String sql2 = "INSERT INTO Team (teamName) VALUES (?)";
         try {
             PreparedStatement statement = con.prepareStatement(sql2);
-            statement.setString(1, Integer.toString(team.getTeamID()));
-            statement.setString(2, team.getName());
+            statement.setString(1, team.getName());
             statement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -71,7 +70,7 @@ public class MySQLConnection {
             return;
         }
         // before insert player info, need check if the player info already in the database
-        String sql = "SELECT playerID FROM Player WHERE commonName = ?";
+        String sql = "SELECT commonName FROM Player WHERE commonName = ?";
         try {
             PreparedStatement statement = con.prepareStatement(sql);
             statement.setString(1, player.getCommonName());
@@ -83,7 +82,7 @@ public class MySQLConnection {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        String sql2 = "INSERT INTO Player (playerID, teamID, fullName, commonName,"
+        String sql2 = "INSERT INTO Player (commonName, teamName, fullName, commonName,"
                 + "position, birthDate, nationality, imageUrl) VALUES"
                 + "(?, ?, ?, ?, ?, ?, ?, ?)";
         try {
@@ -107,7 +106,7 @@ public class MySQLConnection {
             System.err.println("DB connection failed");
             return 0;
         }
-        String sql = "SELECT COUNT(playerID) AS playerCount from Player";
+        String sql = "SELECT COUNT(commonName) AS playerCount from Player";
         int result = 0;
         try {
             PreparedStatement statement = con.prepareStatement(sql);
@@ -127,7 +126,7 @@ public class MySQLConnection {
             System.err.println("DB connection failed");
             return 0;
         }
-        String sql = "SELECT COUNT(teamID) AS teamCount from Team";
+        String sql = "SELECT COUNT(teamName) AS teamCount from Team";
         int result = 0;
         try {
             PreparedStatement statement = con.prepareStatement(sql);
@@ -293,7 +292,7 @@ public class MySQLConnection {
             System.err.println("DB connection failed");
             return result;
         }
-        String sql = "SELECT position, COUNT(playerID) AS count FROM Player NATURAL JOIN Team WHERE name = ? GROUP BY position";
+        String sql = "SELECT position, COUNT(commonName) AS count FROM Player NATURAL JOIN Team WHERE name = ? GROUP BY position";
         try {
             PreparedStatement statement = con.prepareStatement(sql);
             statement.setString(1, teamName);
@@ -314,7 +313,7 @@ public class MySQLConnection {
             System.err.println("DB connection failed");
             return result;
         }
-        String sql = "SELECT position, nationality, COUNT(playerID) AS count FROM Player NATURAL JOIN Team WHERE birthDate LIKE ? GROUP BY position, nationality";
+        String sql = "SELECT position, nationality, COUNT(commonName) AS count FROM Player NATURAL JOIN Team WHERE birthDate LIKE ? GROUP BY position, nationality";
         try {
             PreparedStatement statement = con.prepareStatement(sql);
             statement.setString(1, "%200%");
@@ -340,59 +339,58 @@ public class MySQLConnection {
         double result = -1;
         try {
             //query returns average value of every spec of champion (kills, deaths and assists is calculated as KDA)
-            PreparedStatement st = con.prepareStatement("SELECT championID, AVG((kills + assists) / deaths) AS KDA"
-//                            + ", AVG(totalDamageDealt) AS totalDamageDealt, "
-//                            + "AVG(totalDamageDealtToChampion) AS totalDamageDealtToChampion, "
-//                            + "AVG(totalDamageTaken) AS totalDamageTaken, "
-//                            + "AVG(towerKills) AS towerKills, "
-//                            + "AVG(inhibitorKills) AS inhibitorKills, "
-//                            + "AVG(goldEarned) AS goldEarned, "
-//                            + "AVG(totalMinionsKilled) AS totalMinionsKilled, "
-//                            + "AVG(neutralMinionsKIlled) AS neutralMinionsKIlled"
+            CallableStatement cs = con.prepareCall("{call getChampionStat(?, ?, ?, ?, ?)}");
 
-                    + "FROM PlayerPerformance "
-                    + "WHERE championID IN (SELECT championID FROM Champion WHERE name IN (?, ?, ?, ?, ?)) "
-                    + "GROUP BY championID");
+            double[] chamStat1 = new double[chamList1.length];
+            double[] chamStat2 = new double[chamList2.length];
 
-
-
-            int i;
+            //get the champion statistics for list 1
+            //  1.set up parameters
+            int i = 0;
             for (i = 0; i < chamList1.length; i++) {
-                st.setString(i + 1, chamList1[i]);
+                cs.setString(i + 1, chamList1[i]);
             }
 
-            ResultSet rs = st.executeQuery();
+            //2. execute the query
+            ResultSet rs = cs.executeQuery();
 
-            double[] chamKDA1 = new double[chamList1.length];
-
+            //3. get the result set
+            // (TODO: more statistics should be used)
             i = 0;
             while (rs.next()) {
                 chamKDA1[i] = rs.getDouble("KDA");
                 i++;
             }
 
+
+            //get the champion statistics for list 2
+            //  1.set up parameters
             for (i = 0; i < chamList2.length; i++) {
-                st.setString(i + 1 + chamList1.length, chamList2[i]);
+                cs.setString(i + 1, chamList2[i]);
             }
 
-            rs = st.executeQuery();
+            //2. execute the query
+            rs = cs.executeQuery();
 
-            double[] chamKDA2 = new double[chamList2.length];
-
+            //3. get the result set
+            // (TODO: more statistics should be used)
             i = 0;
             while (rs.next()) {
                 chamKDA2[i] = rs.getDouble("KDA");
                 i++;
             }
 
-            result = calculateWinRate(chamKDA1, chamKDA2);
 
-            st.executeUpdate();
-            st.close();
+            result = calculateWinRate(chamStat1, chamStat2);
+
+            cs.executeUpdate();
+            cs.close();
             con.close();
+
         } catch(SQLException e) {
             e.printStackTrace();
         }
+
         return result;
     }
 
