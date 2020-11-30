@@ -409,7 +409,7 @@ public class MySQLConnection {
             System.err.println("DB connection failed");
             return result;
         }
-        String sql = "SELECT position, COUNT(commonName) AS count FROM Player NATURAL JOIN Team WHERE name = ? GROUP BY position";
+        String sql = "SELECT position, COUNT(commonName) AS count FROM Player NATURAL JOIN Team WHERE teamName = ? GROUP BY position";
         try {
             PreparedStatement statement = con.prepareStatement(sql);
             statement.setString(1, teamName);
@@ -447,7 +447,9 @@ public class MySQLConnection {
 
 //    // argument is two lists of champion name, each contains 5 names
 //    // return the win rate of 1st chamlist
-//    public double getWinRate(String[] chamList1, String[] chamList2) {
+    public double getWinRate(String[] chamList1, String[] chamList2) {
+        return 0.5;
+    }
 //
 //        if (con == null) {
 //            System.err.println("DB connection failed");
