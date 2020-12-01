@@ -452,10 +452,10 @@ public class MySQLConnection {
         double result = -1;
         try {
             //query returns average value of every spec of champion (kills, deaths and assists is calculated as KDA)
-            CallableStatement cs = con.prepareCall("{call getChampionStat(?, ?, ?, ?, ?)}");
+            CallableStatement cs = con.prepareCall("{call getWinRate(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)}");
 
-            double[] chamStat1 = new double[chamList1.length];
-            double[] chamStat2 = new double[chamList2.length];
+//            double[] chamStat1 = new double[chamList1.length];
+//            double[] chamStat2 = new double[chamList2.length];
 
             //get the champion statistics for list 1
             //  1.set up parameters
@@ -464,37 +464,39 @@ public class MySQLConnection {
                 cs.setString(i + 1, chamList1[i]);
             }
 
-            //2. execute the query
-            ResultSet rs = cs.executeQuery();
-
-            //3. get the result set
-            // (TODO: more statistics should be used)
-            i = 0;
-            while (rs.next()) {
-                chamStat1[i] = rs.getDouble("KDA");
-                i++;
-            }
+//            //2. execute the query
+//            ResultSet rs = cs.executeQuery();
+//
+//            //3. get the result set
+//            // TODO: more statistics should be used
+//            i = 0;
+//            while (rs.next()) {
+//                chamStat1[i] = rs.getDouble("KDA");
+//                i++;
+//            }
 
 
             //get the champion statistics for list 2
             //  1.set up parameters
             for (i = 0; i < chamList2.length; i++) {
-                cs.setString(i + 1, chamList2[i]);
+                cs.setString(i + 1 + chamList1.length, chamList2[i]);
             }
 
             //2. execute the query
-            rs = cs.executeQuery();
+            ResultSet rs = cs.executeQuery();
 
-            //3. get the result set
-            // (TODO: more statistics should be used)
-            i = 0;
-            while (rs.next()) {
-                chamStat2[i] = rs.getDouble("KDA");
-                i++;
+//            //3. get the result set
+//            // TODO: more statistics should be used
+//            i = 0;
+//            while (rs.next()) {
+//                chamStat2[i] = rs.getDouble("KDA");
+//                i++;
+//            }
+
+            if (rs.next()) {
+                result = rs.getDouble("winRate");
             }
 
-
-            result = calculateWinRate(chamStat1, chamStat2);
 
             cs.executeUpdate();
             cs.close();
@@ -528,43 +530,44 @@ public class MySQLConnection {
 
 
 
-//    // function to generate all stored procedure and add them into database
-//    // add more prodecure if you want
-//    public void generateProcedure() {
-//        if (con == null) {
-//            System.err.println("DB connection failed");
-//            return;
-//        }
-//
-//        Statement statement = null;
-//        try {
-//
-//            String sql = "";
-//
-//            sql = "DELIMITER // "
-//                    + "DROP PROCEDURE IF EXISTS cs411project.getChampionStat//"
-//                    + "CREATE PROCEDURE getChampionStat(IN cham_1 VARCHAR(100), IN cham_2 VARCHAR(100), IN cham_3 VARCHAR(100), IN cham_4 VARCHAR(100), IN cham_5 VARCHAR(100))"
-//                    + "BEGIN "
-//                    + "SELECT championName,"
-//                    + "AVG((kills + assists) / GREATEST(1, deaths)) AS KDA "
-////                    + ",AVG(totalDamageDealt) AS totalDamageDealt, "
-////                    + "AVG(totalDamageDealtToChampion) AS totalDamageDealtToChampion, "
-////                    + "AVG(totalDamageTaken) AS totalDamageTaken, "
-////                    + "AVG(goldEarned) AS goldEarned, "
-////                    + "AVG(totalMinionsKilled) AS totalMinionsKilled"
-//                    + "FROM PlayerPerformance "
-//                    + "WHERE championName IN (cham_1, cham_2, cham_3, cham_4, cham_5) "
-//                    + "GROUP BY championName "
-//                    + "END // "
-//                    + "DELIMITER ;";
-//
-//            statement = con.createStatement();
-//            statement.executeUpdate(sql);
-//
-//            statement.close();
-//        } catch (SQLException e) {
-//            e.printStackTrace();
-//        }
-//    }
+    // function to generate all stored procedure and add them into database
+    // add more prodecure if you want
+    public void generateProcedure() {
+        if (con == null) {
+            System.err.println("DB connection failed");
+            return;
+        }
+
+
+        try {
+            Statement statement = con.createStatement();
+
+            String sql = "";
+
+            sql = "DELIMITER // "
+                    + "DROP PROCEDURE IF EXISTS cs411project.getChampionStat//"
+                    + "CREATE PROCEDURE getChampionStat(IN cham_1 VARCHAR(100), IN cham_2 VARCHAR(100), IN cham_3 VARCHAR(100), IN cham_4 VARCHAR(100), IN cham_5 VARCHAR(100))"
+                    + "BEGIN "
+                    + "SELECT championName,"
+                    + "AVG((kills + assists) / GREATEST(1, deaths)) AS KDA "
+//                    + ",AVG(totalDamageDealt) AS totalDamageDealt, "
+//                    + "AVG(totalDamageDealtToChampion) AS totalDamageDealtToChampion, "
+//                    + "AVG(totalDamageTaken) AS totalDamageTaken, "
+//                    + "AVG(goldEarned) AS goldEarned, "
+//                    + "AVG(totalMinionsKilled) AS totalMinionsKilled"
+                    + "FROM PlayerPerformance "
+                    + "WHERE championName IN (cham_1, cham_2, cham_3, cham_4, cham_5) "
+                    + "GROUP BY championName// "
+                    + "END // "
+                    + "DELIMITER ;";
+
+
+            statement.executeUpdate(sql);
+
+            statement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 
 }
